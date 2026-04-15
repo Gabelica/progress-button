@@ -19,10 +19,7 @@ import {
 } from "./utils";
 import "./editor";
 
-/**
- * ButtonProgressCard — A generic toggle button with an optional animated
- * progress bar driven by a timer or numeric entity.
- */
+
 class ButtonProgressCard extends LitElement {
   @property({ attribute: false }) public hass?: HomeAssistant;
   @state() private _config?: ButtonProgressCardConfig;
@@ -37,6 +34,7 @@ class ButtonProgressCard extends LitElement {
   static styles = css`
     :host {
       display: block;
+      height: 100%;
     }
 
     ha-card {
