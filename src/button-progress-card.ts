@@ -96,6 +96,7 @@ class ButtonProgressCard extends LitElement {
       margin: 0 6px 0 8px;
       border-radius: 50%;
       flex-shrink: 0;
+      background-color: var(--bubble-icon-background-color, var(--accent-color));
     }
 
     .bpc-icon {

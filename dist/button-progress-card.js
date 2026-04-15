@@ -67,7 +67,7 @@ const t=globalThis,i$1=t=>t,s$1=t.trustedTypes,e=s$1?s$1.createPolicy("lit-html"
  * SPDX-License-Identifier: BSD-3-Clause
  */function r(r){return n({...r,state:true,attribute:false})}
 
-const CARD_VERSION = "__CARD_VERSION__";
+const CARD_VERSION = "1.0.0";
 const CARD_TAG_NAME = "button-progress-card";
 const EDITOR_TAG_NAME = "button-progress-card-editor";
 const TIMER_DOMAIN = "timer";
@@ -662,6 +662,7 @@ ButtonProgressCard.styles = i$3 `
       margin: 0 6px 0 8px;
       border-radius: 50%;
       flex-shrink: 0;
+      background-color: var(--bubble-icon-background-color, var(--accent-color));
     }
 
     .bpc-icon {
