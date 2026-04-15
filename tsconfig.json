@@ -11,6 +11,7 @@
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
+    "importHelpers": false,
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
     "declaration": false,
