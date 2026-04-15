@@ -91,8 +91,8 @@ class ButtonProgressCard extends LitElement {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 38px;
-      height: 38px;
+      width: 42px;
+      height: 42px;
       margin: 0 6px 0 8px;
       border-radius: 50%;
       flex-shrink: 0;
@@ -100,7 +100,7 @@ class ButtonProgressCard extends LitElement {
     }
 
     .bpc-icon {
-      --mdc-icon-size: 22px;
+      --mdc-icon-size: 24px;
       color: var(--primary-text-color);
       opacity: 0.6;
       transition: color 0.4s ease, opacity 0.4s ease;
