@@ -50,10 +50,7 @@ class ButtonProgressCard extends LitElement {
       min-height: 50px;
       padding: 0;
       border-radius: var(--bubble-border-radius, var(--ha-card-border-radius, 28px));
-      background-color: var(
-        --bubble-button-main-background-color,
-        var(--secondary-background-color)
-      );
+      background-color: transparent;
       overflow: hidden;
       cursor: pointer;
       box-shadow: var(--bubble-box-shadow, var(--ha-card-box-shadow, none));
@@ -67,18 +64,18 @@ class ButtonProgressCard extends LitElement {
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background-color: transparent;
+      background-color: var(
+        --bubble-button-main-background-color,
+        var(--secondary-background-color)
+      );
       pointer-events: none;
       z-index: 0;
-      transition: background-color 0.4s ease;
+      opacity: 0.5;
+      transition: opacity 0.4s ease;
     }
 
     .bpc-state-overlay.is-on {
-      background-color: color-mix(
-        in srgb,
-        var(--accent-color) 20%,
-        var(--bubble-button-main-background-color, var(--secondary-background-color))
-      );
+      opacity: 1;
     }
 
     .bpc-content {
@@ -109,7 +106,7 @@ class ButtonProgressCard extends LitElement {
     }
 
     .bpc-icon.is-on {
-      color: var(--accent-color);
+      color: var(--primary-color);
       opacity: 1;
     }
 
@@ -373,7 +370,7 @@ class ButtonProgressCard extends LitElement {
     const name = this._config.name || (entityState.attributes.friendly_name as string) || this._config.entity;
     const icon = this._config.icon || (entityState.attributes.icon as string) || deriveDefaultIcon(entityState);
     const barColor = isOn
-      ? "var(--primary-background-color)"
+      ? "var(--primary-color)"
       : (this._config.bar_color ?? "var(--accent-color)");
     const barHeight = this._config.bar_height ?? 4;
 

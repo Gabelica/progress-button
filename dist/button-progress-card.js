@@ -1,3 +1,5 @@
+
+(function(l, r) { if (!l || l.getElementById('livereloadscript')) return; r = l.createElement('script'); r.async = 1; r.src = '//' + (self.location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1'; r.id = 'livereloadscript'; l.getElementsByTagName('head')[0].appendChild(r) })(self.document);
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -65,7 +67,7 @@ const t=globalThis,i$1=t=>t,s$1=t.trustedTypes,e=s$1?s$1.createPolicy("lit-html"
  * SPDX-License-Identifier: BSD-3-Clause
  */function r(r){return n({...r,state:true,attribute:false})}
 
-const CARD_VERSION = "1.0.0";
+const CARD_VERSION = "__CARD_VERSION__";
 const CARD_TAG_NAME = "button-progress-card";
 const EDITOR_TAG_NAME = "button-progress-card-editor";
 const TIMER_DOMAIN = "timer";
@@ -557,7 +559,7 @@ class ButtonProgressCard extends i {
         const name = this._config.name || entityState.attributes.friendly_name || this._config.entity;
         const icon = this._config.icon || entityState.attributes.icon || deriveDefaultIcon(entityState);
         const barColor = isOn
-            ? "var(--primary-background-color)"
+            ? "var(--primary-color)"
             : (this._config.bar_color ?? "var(--accent-color)");
         const barHeight = this._config.bar_height ?? 4;
         return b `
@@ -614,10 +616,7 @@ ButtonProgressCard.styles = i$3 `
       min-height: 50px;
       padding: 0;
       border-radius: var(--bubble-border-radius, var(--ha-card-border-radius, 28px));
-      background-color: var(
-        --bubble-button-main-background-color,
-        var(--secondary-background-color)
-      );
+      background-color: transparent;
       overflow: hidden;
       cursor: pointer;
       box-shadow: var(--bubble-box-shadow, var(--ha-card-box-shadow, none));
@@ -631,18 +630,18 @@ ButtonProgressCard.styles = i$3 `
       position: absolute;
       inset: 0;
       border-radius: inherit;
-      background-color: transparent;
+      background-color: var(
+        --bubble-button-main-background-color,
+        var(--secondary-background-color)
+      );
       pointer-events: none;
       z-index: 0;
-      transition: background-color 0.4s ease;
+      opacity: 0.5;
+      transition: opacity 0.4s ease;
     }
 
     .bpc-state-overlay.is-on {
-      background-color: color-mix(
-        in srgb,
-        var(--accent-color) 20%,
-        var(--bubble-button-main-background-color, var(--secondary-background-color))
-      );
+      opacity: 1;
     }
 
     .bpc-content {
@@ -673,7 +672,7 @@ ButtonProgressCard.styles = i$3 `
     }
 
     .bpc-icon.is-on {
-      color: var(--accent-color);
+      color: var(--primary-color);
       opacity: 1;
     }
 

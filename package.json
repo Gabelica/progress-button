@@ -5,13 +5,17 @@
   "description": "A generic toggle button with an optional animated progress bar for Home Assistant",
   "scripts": {
     "build": "rollup -c rollup.config.js",
-    "watch": "rollup -c rollup.config.js --watch"
+    "watch": "rollup -c rollup.config.js --watch",
+    "dev": "rollup -c rollup.config.js --watch"
   },
   "devDependencies": {
+    "@rollup/plugin-replace": "^5.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@rollup/plugin-typescript": "^11.0.0",
     "lit": "^3.0.0",
     "rollup": "^4.0.0",
+    "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-serve": "^2.0.0",
     "tslib": "^2.6.0",
     "typescript": "^5.0.0"
   }

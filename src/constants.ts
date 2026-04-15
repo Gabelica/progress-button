@@ -1,6 +1,6 @@
 import type { ButtonProgressCardConfig } from "./types";
 
-export const CARD_VERSION = "1.0.0";
+export const CARD_VERSION = "__CARD_VERSION__";
 export const CARD_TAG_NAME = "button-progress-card";
 export const EDITOR_TAG_NAME = "button-progress-card-editor";
 

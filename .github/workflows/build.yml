@@ -27,14 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Generate lock file
-        run: npm install --package-lock-only
-
-      - name: Commit lock file
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'chore: add package-lock.json'
-          file_pattern: 'package-lock.json'
+      - name: Set version from release tag
+        if: github.event_name == 'release'
+        run: echo "CARD_VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
 
       - name: Build
         run: npm run build
