@@ -43,10 +43,7 @@ class ButtonProgressCard extends LitElement {
       position: relative;
       display: flex;
       align-items: center;
-      height: calc(
-        var(--row-height, 56px) * var(--row-size, 1) +
-        var(--row-gap, 8px) * (var(--row-size, 1) - 1)
-      );
+      height: 100%;
       min-height: 50px;
       padding: 0;
       border-radius: var(--bubble-border-radius, var(--ha-card-border-radius, 28px));
