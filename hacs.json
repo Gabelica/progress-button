@@ -3,5 +3,5 @@
   "description": "A generic toggle button with an optional animated progress bar driven by a timer or numeric entity.",
   "render_readme": true,
   "filename": "button-progress-card.js",
-  "content_in_root": true
+  "content_in_root": false
 }
