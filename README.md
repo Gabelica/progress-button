@@ -50,3 +50,9 @@ npm install
 npm run build
 npm run watch
 ```
+
+After your first release, CI will commit the built `dist/` file back to the repo. Once you pull that commit, run this once to prevent local builds from dirtying your working tree:
+
+```bash
+git update-index --skip-worktree dist/button-progress-card.js
+```
