@@ -34,9 +34,8 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Commit dist
+      - name: Upload release asset
         if: github.event_name == 'release'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: 'chore: rebuild dist'
-          file_pattern: 'dist/button-progress-card.js'
+        run: gh release upload ${{ github.ref_name }} dist/button-progress-card.js --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
