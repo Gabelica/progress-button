@@ -8,7 +8,6 @@ export default {
     format: "es",
     sourcemap: true,
   },
-  external: ["lit", "lit/decorators.js", "lit/directives/style-map.js"],
   plugins: [
     resolve(),
     typescript({
