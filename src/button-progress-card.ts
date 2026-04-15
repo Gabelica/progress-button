@@ -34,7 +34,10 @@ class ButtonProgressCard extends LitElement {
   static styles = css`
     :host {
       display: block;
-      height: 100%;
+      height: calc(
+        var(--row-height, 56px) * var(--row-size, 1) +
+        var(--row-gap, 8px) * (var(--row-size, 1) - 1)
+      );
     }
 
     ha-card {
@@ -152,6 +155,18 @@ class ButtonProgressCard extends LitElement {
       throw new Error("entity is required");
     }
     this._config = { ...DEFAULT_CONFIG, ...config };
+  }
+
+  /**
+   * Returns the default grid options for the sections layout.
+   */
+  public static getGridOptions() {
+    return {
+      grid_rows: 1.3,
+      grid_columns: 6,
+      grid_min_rows: 1,
+      grid_min_columns: 2,
+    };
   }
 
   /**
