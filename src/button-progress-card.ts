@@ -34,10 +34,7 @@ class ButtonProgressCard extends LitElement {
   static styles = css`
     :host {
       display: block;
-      height: calc(
-        var(--row-height, 56px) * var(--row-size, 1) +
-        var(--row-gap, 8px) * (var(--row-size, 1) - 1)
-      );
+      height: 100%;
     }
 
     ha-card {
