@@ -190,7 +190,7 @@ const cardStyles = i$3 `
   }
 `;
 
-const CARD_VERSION = "0.0.17-beta";
+const CARD_VERSION = "0.0.18-beta";
 const CARD_TAG_NAME = "button-progress-card";
 const EDITOR_TAG_NAME = "button-progress-card-editor";
 const TIMER_DOMAIN = "timer";
@@ -713,6 +713,7 @@ class ButtonProgressCard extends i {
           </div>
           <span class="bpc-name">${name}</span>
         </div>
+        <ha-ripple></ha-ripple>
         ${this._barVisible
             ? b `
               <div class="bpc-progress-bar">
