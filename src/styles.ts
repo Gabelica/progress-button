@@ -41,7 +41,6 @@ export const cardStyles = css`
     );
     pointer-events: none;
     z-index: 0;
-    opacity: 0.5;
     transition: background-color 0.4s ease, opacity 0.4s ease;
   }
 
