@@ -100,9 +100,12 @@ const cardStyles = i$3 `
     inset: 0;
     border-radius: inherit;
     background-color: var(
-        --bubble-button-background-color,
+        --bubble-button-main-background-color,
+        var(--bubble-main-background-color,
+        var(--bubble-button-background-color-2,
+        var(--bubble-button-background-color,
         var(--ha-card-background,
-        var(--card-background-color, #2f0f47))
+        var(--card-background-color)))))
     );
     pointer-events: none;
     z-index: 0;
@@ -190,7 +193,7 @@ const cardStyles = i$3 `
   }
 `;
 
-const CARD_VERSION = "0.0.18-beta";
+const CARD_VERSION = "0.0.19-beta";
 const CARD_TAG_NAME = "button-progress-card";
 const EDITOR_TAG_NAME = "button-progress-card-editor";
 const TIMER_DOMAIN = "timer";
