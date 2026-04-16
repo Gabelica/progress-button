@@ -65,7 +65,132 @@ const t=globalThis,i$1=t=>t,s$1=t.trustedTypes,e=s$1?s$1.createPolicy("lit-html"
  * SPDX-License-Identifier: BSD-3-Clause
  */function r(r){return n({...r,state:true,attribute:false})}
 
-const CARD_VERSION = "0.0.14-beta";
+const cardStyles = i$3 `
+  :host {
+    display: block;
+    height: 100%;
+  }
+
+  ha-card {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+    min-height: 50px;
+    padding: 0;
+    border-radius: var(--bubble-border-radius, var(--ha-card-border-radius, 28px));
+    background-color: transparent;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: var(--bubble-box-shadow, var(--ha-card-box-shadow, none));
+    border: var(--bubble-border, none);
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+
+  ha-card.is-unavailable {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .bpc-state-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(
+      --bubble-button-background-color,
+      var(--ha-card-background,
+      var(--card-background-color))
+    );
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.5;
+    transition: background-color 0.4s ease, opacity 0.4s ease;
+  }
+
+  .bpc-state-overlay.is-on {
+    opacity: 1;
+    background-color: var(
+      --bubble-accent-color,
+      var(--primary-color)
+    );
+  }
+
+  .bpc-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+  }
+
+  .bpc-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin: 0 6px 0 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background-color: var(
+      --bubble-icon-background-color,
+      var(--accent-color)
+    );
+  }
+
+  .bpc-icon {
+    --mdc-icon-size: 24px;
+    color: var(--bubble-icon-color, var(--primary-text-color));
+    opacity: 0.6;
+    transition: color 0.4s ease, opacity 0.4s ease;
+  }
+
+  .bpc-icon.is-on {
+    color: var(--bubble-icon-color, var(--primary-text-color));
+    opacity: 1;
+  }
+
+  .bpc-name {
+    flex-grow: 1;
+    margin: 0 16px 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--bubble-text-color, var(--primary-text-color));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.4s ease;
+    pointer-events: none;
+  }
+
+  .bpc-progress-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--bpc-bar-height, 4px);
+    background-color: color-mix(
+      in srgb,
+      var(--bpc-bar-color) 25%,
+      transparent
+    );
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .bpc-progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: var(--bpc-bar-color);
+    will-change: width;
+  }
+`;
+
+const CARD_VERSION = "0.0.15-beta";
 const CARD_TAG_NAME = "button-progress-card";
 const EDITOR_TAG_NAME = "button-progress-card-editor";
 const TIMER_DOMAIN = "timer";
@@ -352,6 +477,7 @@ class ButtonProgressCard extends i {
         this._pressTimer = null;
         this._lastTapTime = 0;
         this._holdFired = false;
+        this._pendingTapTimer = null;
     }
     /**
      * Sets the card configuration, merging with defaults.
@@ -401,9 +527,14 @@ class ButtonProgressCard extends i {
         };
     }
     updated(changedProperties) {
-        if (changedProperties.has("hass")) {
-            this._updateProgressBar();
-        }
+        if (!changedProperties.has("hass"))
+            return;
+        const oldHass = changedProperties.get("hass");
+        const timerEntityId = this._config?.timer_entity;
+        if (timerEntityId &&
+            oldHass?.states[timerEntityId] === this.hass?.states[timerEntityId])
+            return;
+        this._updateProgressBar();
     }
     /**
      * Evaluates the progress bar entity and delegates to the appropriate
@@ -528,18 +659,17 @@ class ButtonProgressCard extends i {
         }
         if (this._holdFired)
             return;
-        const now = Date.now();
-        const timeSinceLastTap = now - this._lastTapTime;
-        if (timeSinceLastTap < DOUBLE_TAP_THRESHOLD_MS) {
-            this._lastTapTime = 0;
+        if (this._pendingTapTimer) {
+            clearTimeout(this._pendingTapTimer);
+            this._pendingTapTimer = null;
             if (this._config && this.hass) {
                 handleAction(this, this.hass, this._config, this._config.double_tap_action);
             }
         }
         else {
-            this._lastTapTime = now;
-            setTimeout(() => {
-                if (this._lastTapTime === now && this._config && this.hass) {
+            this._pendingTapTimer = setTimeout(() => {
+                this._pendingTapTimer = null;
+                if (this._config && this.hass) {
                     handleAction(this, this.hass, this._config, this._config.tap_action);
                 }
             }, DOUBLE_TAP_THRESHOLD_MS);
@@ -563,12 +693,14 @@ class ButtonProgressCard extends i {
         const isOn = isEntityActive(entityState.state);
         const name = this._config.name || entityState.attributes.friendly_name || this._config.entity;
         const icon = this._config.icon || entityState.attributes.icon || deriveDefaultIcon(entityState);
+        const isUnavailable = ["unavailable", "unknown"].includes(entityState.state);
         const barColor = isOn
             ? "var(--primary-color)"
             : (this._config.bar_color ?? "var(--accent-color)");
         const barHeight = this._config.bar_height ?? 4;
         return b `
       <ha-card
+        class="${isUnavailable ? "is-unavailable" : ""}"
         style="--bpc-bar-color: ${barColor}; --bpc-bar-height: ${barHeight}px;"
         @pointerdown=${this._onPointerDown}
         @pointerup=${this._onPointerUp}
@@ -597,124 +729,16 @@ class ButtonProgressCard extends i {
     disconnectedCallback() {
         super.disconnectedCallback();
         this._cancelAnimation();
-        if (this._pressTimer !== null) {
+        if (this._pressTimer !== null)
             clearTimeout(this._pressTimer);
-        }
+        if (this._pendingTapTimer !== null)
+            clearTimeout(this._pendingTapTimer);
     }
     getCardSize() {
         return 1;
     }
 }
-ButtonProgressCard.styles = i$3 `
-    :host {
-      display: block;
-      height: 100%;
-    }
-
-    ha-card {
-      position: relative;
-      display: flex;
-      align-items: center;
-      height: 100%;
-      min-height: 50px;
-      padding: 0;
-      border-radius: var(--bubble-border-radius, var(--ha-card-border-radius, 28px));
-      background-color: transparent;
-      overflow: hidden;
-      cursor: pointer;
-      box-shadow: var(--bubble-box-shadow, var(--ha-card-box-shadow, none));
-      border: var(--bubble-border, none);
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    .bpc-state-overlay {
-      position: absolute;
-      inset: 0;
-      border-radius: inherit;
-      background-color: var(
-        --bubble-button-main-background-color,
-        var(--secondary-background-color)
-      );
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.5;
-      transition: opacity 0.4s ease;
-    }
-
-    .bpc-state-overlay.is-on {
-      opacity: 1;
-    }
-
-    .bpc-content {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      height: 100%;
-      position: relative;
-      z-index: 1;
-    }
-
-    .bpc-icon-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 42px;
-      height: 42px;
-      margin: 0 6px 0 8px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background-color: var(--bubble-icon-background-color, var(--accent-color));
-    }
-
-    .bpc-icon {
-      --mdc-icon-size: 24px;
-      color: var(--primary-text-color);
-      opacity: 0.6;
-      transition: color 0.4s ease, opacity 0.4s ease;
-    }
-
-    .bpc-icon.is-on {
-      color: var(--primary-color);
-      opacity: 1;
-    }
-
-    .bpc-name {
-      flex-grow: 1;
-      margin: 0 16px 0 4px;
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--primary-text-color);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: color 0.4s ease;
-      pointer-events: none;
-    }
-
-    .bpc-progress-bar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: var(--bpc-bar-height, 4px);
-      background-color: color-mix(
-        in srgb,
-        var(--bpc-bar-color) 25%,
-        transparent
-      );
-      pointer-events: none;
-      z-index: 2;
-    }
-
-    .bpc-progress-fill {
-      height: 100%;
-      width: 0%;
-      background-color: var(--bpc-bar-color);
-      will-change: width;
-    }
-  `;
+ButtonProgressCard.styles = cardStyles;
 __decorate([
     n({ attribute: false })
 ], ButtonProgressCard.prototype, "hass", void 0);
