@@ -193,7 +193,7 @@ const cardStyles = i$3 `
   }
 `;
 
-const CARD_VERSION = "0.0.19-beta";
+const CARD_VERSION = "1.0.0";
 const CARD_TAG_NAME = "button-progress-card";
 const EDITOR_TAG_NAME = "button-progress-card-editor";
 const TIMER_DOMAIN = "timer";
