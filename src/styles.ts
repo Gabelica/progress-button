@@ -35,20 +35,21 @@ export const cardStyles = css`
     inset: 0;
     border-radius: inherit;
     background-color: var(
-      --bubble-button-background-color,
-      var(--ha-card-background,
-      var(--card-background-color))
+        --bubble-button-background-color,
+        var(--ha-card-background,
+        var(--card-background-color, #2f0f47))
     );
     pointer-events: none;
     z-index: 0;
-    transition: background-color 0.4s ease, opacity 0.4s ease;
+    opacity: 1;
+    transition: background-color 0.4s ease;
   }
 
   .bpc-state-overlay.is-on {
     opacity: 1;
     background-color: var(
       --bubble-accent-color,
-      var(--primary-color)
+      var(--primary-color, #5555a0)
     );
   }
 
