@@ -35,9 +35,12 @@ export const cardStyles = css`
     inset: 0;
     border-radius: inherit;
     background-color: var(
-        --bubble-button-background-color,
+        --bubble-button-main-background-color,
+        var(--bubble-main-background-color,
+        var(--bubble-button-background-color-2,
+        var(--bubble-button-background-color,
         var(--ha-card-background,
-        var(--card-background-color, #2f0f47))
+        var(--card-background-color)))))
     );
     pointer-events: none;
     z-index: 0;

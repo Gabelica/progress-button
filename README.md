@@ -43,6 +43,30 @@ All configuration is available through the UI editor.
 | `hold_action` | action | `more-info` | Long press action |
 | `double_tap_action` | action | `none` | Double tap action |
 
+
+## Theme Support
+
+The card follows Bubble Card CSS variables for consistent theming. Add these to your HA theme for full control:
+
+| Variable | Description | Default fallback |
+|---|---|---|
+| `bubble-button-background-color` | Off state background | `ha-card-background` |
+| `bubble-accent-color` | On state background | `primary-color` |
+| `bubble-icon-background-color` | Icon circle background | `accent-color` |
+| `bubble-icon-color` | Icon color | `primary-text-color` |
+| `bubble-text-color` | Name label color | `primary-text-color` |
+| `bubble-border-radius` | Card border radius | `ha-card-border-radius` |
+
+## Supported Entity Domains
+
+| Domain | Progress bar source |
+|---|---|
+| `timer.*` | Animated countdown via `finishes_at` |
+| `input_number.*` | Value between `min` and `max` |
+| `number.*` | Value between `min` and `max` |
+| `counter.*` | Value between `minimum` and `maximum` |
+| `sensor.*` | Value between `bar_min` and `bar_max` |
+
 ## Development
 
 ```bash
