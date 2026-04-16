@@ -298,6 +298,7 @@ protected updated(changedProperties: PropertyValues): void {
           </div>
           <span class="bpc-name">${name}</span>
         </div>
+        <ha-ripple></ha-ripple>
         ${this._barVisible
           ? html`
               <div class="bpc-progress-bar">
