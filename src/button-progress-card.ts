@@ -31,6 +31,7 @@ class ButtonProgressCard extends LitElement {
   private _pressTimer: ReturnType<typeof setTimeout> | null = null;
   private _lastTapTime: number = 0;
   private _holdFired: boolean = false;
+  private _pendingTapTimer: ReturnType<typeof setTimeout> | null = null;
 
   static styles = cardStyles;
 
@@ -85,11 +86,19 @@ class ButtonProgressCard extends LitElement {
     };
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has("hass")) {
-      this._updateProgressBar();
-    }
-  }
+protected updated(changedProperties: PropertyValues): void {
+  if (!changedProperties.has("hass")) return;
+  
+  const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
+  const timerEntityId = this._config?.timer_entity;
+  
+  if (
+    timerEntityId &&
+    oldHass?.states[timerEntityId] === this.hass?.states[timerEntityId]
+  ) return;
+
+  this._updateProgressBar();
+}
 
   /**
    * Evaluates the progress bar entity and delegates to the appropriate
@@ -232,18 +241,16 @@ class ButtonProgressCard extends LitElement {
 
     if (this._holdFired) return;
 
-    const now = Date.now();
-    const timeSinceLastTap = now - this._lastTapTime;
-
-    if (timeSinceLastTap < DOUBLE_TAP_THRESHOLD_MS) {
-      this._lastTapTime = 0;
+    if (this._pendingTapTimer) {
+      clearTimeout(this._pendingTapTimer);
+      this._pendingTapTimer = null;
       if (this._config && this.hass) {
         handleAction(this, this.hass, this._config, this._config.double_tap_action);
       }
     } else {
-      this._lastTapTime = now;
-      setTimeout(() => {
-        if (this._lastTapTime === now && this._config && this.hass) {
+      this._pendingTapTimer = setTimeout(() => {
+        this._pendingTapTimer = null;
+        if (this._config && this.hass) {
           handleAction(this, this.hass, this._config, this._config.tap_action);
         }
       }, DOUBLE_TAP_THRESHOLD_MS);
@@ -269,6 +276,8 @@ class ButtonProgressCard extends LitElement {
     const isOn = isEntityActive(entityState.state);
     const name = this._config.name || (entityState.attributes.friendly_name as string) || this._config.entity;
     const icon = this._config.icon || (entityState.attributes.icon as string) || deriveDefaultIcon(entityState);
+    const isUnavailable = ["unavailable", "unknown"].includes(entityState.state);
+
     const barColor = isOn
       ? "var(--primary-color)"
       : (this._config.bar_color ?? "var(--accent-color)");
@@ -276,6 +285,7 @@ class ButtonProgressCard extends LitElement {
 
     return html`
       <ha-card
+        class="${isUnavailable ? "is-unavailable" : ""}"
         style="--bpc-bar-color: ${barColor}; --bpc-bar-height: ${barHeight}px;"
         @pointerdown=${this._onPointerDown}
         @pointerup=${this._onPointerUp}
@@ -305,9 +315,8 @@ class ButtonProgressCard extends LitElement {
   disconnectedCallback(): void {
     super.disconnectedCallback();
     this._cancelAnimation();
-    if (this._pressTimer !== null) {
-      clearTimeout(this._pressTimer);
-    }
+    if (this._pressTimer !== null) clearTimeout(this._pressTimer);
+    if (this._pendingTapTimer !== null) clearTimeout(this._pendingTapTimer);
   }
 
   getCardSize(): number {

@@ -24,6 +24,12 @@ export const cardStyles = css`
     user-select: none;
   }
 
+  ha-card.is-unavailable {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
   .bpc-state-overlay {
     position: absolute;
     inset: 0;
